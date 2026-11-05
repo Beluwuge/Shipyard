@@ -9,3 +9,5 @@ The dashboard runs on an always-on machine in your Tailscale network. Codex owns
 This repository is starting with the agreed product specification. Implementation choices that depend on current Codex APIs and cross-platform host supervision remain open for validation.
 
 See [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) for the V1 scope, operating model, security boundaries, run lifecycle, Git behavior, and memory design.
+
+See [docs/IMPLEMENTATION_SPEC.md](docs/IMPLEMENTATION_SPEC.md) for proposed component contracts, state transitions, duplicate prevention, acceptance scenarios, and delivery slices.

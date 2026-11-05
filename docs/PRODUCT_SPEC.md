@@ -4,6 +4,8 @@
 
 Planning baseline, based on user decisions gathered through 2026-11-05. This document records product intent; it does not claim that the implementation exists.
 
+The companion [implementation specification](IMPLEMENTATION_SPEC.md) translates these decisions into proposed contracts, acceptance scenarios, and delivery slices. It labels engineering proposals separately from agreed requirements.
+
 ## Product
 
 Shipyard is a third-party, self-hosted service that lets one user run and supervise Codex coding workflows on selected remote machines. It pairs a separate web dashboard with a Codex workflow entry point. The service runs on an always-on machine in the user's Tailscale network.
@@ -64,9 +66,9 @@ Codex owns reasoning and workflow decisions. Shipyard stores operational run sta
 
 1. User starts a focused ticket run from $workflow and selects a host, project/repository, and workspace mode.
 2. Codex helps refine the acceptance criteria.
-3. User approves the criteria. Save and commit the approved criteria snapshot before implementation begins.
-4. Create or use a managed repository checkout and an isolated run worktree.
-5. Create a run branch from the latest origin default branch.
+3. User approves the criteria. Save the approved revision and hash.
+4. Create or use a managed repository checkout and prepare the run worktree and branch from the latest origin default branch.
+5. Commit the approved criteria snapshot in that workspace before implementation begins.
 6. Codex implements the ticket and runs checks.
 7. Run repository-configured CI gates and Codex's review of the settled diff. Findings block PR creation until fixed or retry limit is reached.
 8. Allow up to three fix-and-check cycles. After that, pause and report remaining failures.
