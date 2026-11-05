@@ -1,4 +1,5 @@
-export function proofApprovalHandler({ threadId, enabled = false, allowMockDraft = false, record = () => {} }) {
+export function proofApprovalHandler({ threadId, enabled = false, allowMockDraft = false, commandFilter,
+  record = () => {} }) {
   return async request => {
     const params = request.params;
     if (allowMockDraft && request.method === 'mcpServer/elicitation/request' &&
@@ -15,6 +16,10 @@ export function proofApprovalHandler({ threadId, enabled = false, allowMockDraft
     if (!enabled || request.params?.threadId !== threadId || !supported.includes(request.method)) {
       record(`unsupported:${request.method}`);
       throw new Error('Approval outside proof contract');
+    }
+    if (commandFilter && !commandFilter(request)) {
+      record('rejectedByCommandFilter');
+      throw new Error('Outside the fixed local command proof');
     }
     const decisions = request.params.availableDecisions;
     if (decisions && !decisions.includes('accept')) throw new Error('Single-action acceptance unavailable');

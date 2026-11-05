@@ -2,6 +2,8 @@
 
 Ticket: [SHIP-001 / issue #2](https://github.com/Beluwuge/Shipyard/issues/2). The owner's request to implement this ticket approves its proposed criteria. This bounded harness establishes observed integration behavior; it is not the production supervisor or backend.
 
+Scope update: the owner requested local-first implementation before SSH deployment. Local review can proceed with explicitly labeled evidence from the existing account; the dedicated non-admin/remote acceptance criterion remains a later deployment verification rather than being reported as passed here.
+
 ## Pinned environment and integration decision
 
 - Codex CLI: **0.148.0**, required exactly by the scripts. Node: **26.8.1 tested**, with Node 22+ built-ins and no third-party dependencies. Host: macOS.
@@ -40,6 +42,16 @@ npm run proof:codex -- --diagnostic
 
 Diagnostic mode refuses command/file approvals and instructs Codex to use only text responses and the known mock draft tool. It may approve the exact known mock's draft-form elicitation for the proof thread; it rejects arbitrary forms and secrets. This mode cannot satisfy non-admin command execution or file-approval acceptance.
 
+For the owner-authorized local execution phase, use:
+
+```sh
+npm run proof:codex -- --local --model gpt-5.6-sol
+```
+
+Local mode retains a read-only Codex sandbox under the current non-root account. Its approval callback permits only the literal harmless stdout probe (including known shell wrappers), with no permission or network overlays. It rejects file-change approvals and other commands. It also performs a non-mutating write-access check against the protected OS account directory. Local mode is labeled local-proof-only even if all checks pass; membership in the admin group is recorded rather than hidden. The default full proof continues to reject that account. Diagnostic and local modes are mutually exclusive, and all modes reject root.
+
+The [local-first execution evidence](evidence/SHIP-001-local-proof.json) passes all 14 checks, with one observed command approval and one approved mock draft. The literal command completed with exit code zero and the expected marker. The protected-directory access check denied writes without attempting a modification. Eleven automated protocol/contract checks pass, including rejection of command suffixes, sudo prefixes, other commands, file approvals and permission/network overlays.
+
 The local configured default was gpt-6-luna with high effort, while model/list exposed gpt-5.6-sol, gpt-5.6-terra and gpt-5.6-luna. Actual default-model turns failed with unsupported-model responses. The explicit follow-up diagnostic used:
 
 ```sh
@@ -66,8 +78,8 @@ Live checks cover handshake rejection before initialization, a real inference tu
 4. This machine's account belongs to admin. Text/MCP diagnostics are useful here, but OS-boundary and live command/file approval behavior must be demonstrated using the intended non-admin target before SHIP-001 is accepted.
 5. MCP readiness is checked explicitly before invoking the skill. If a completed model answer produces no mock receipt, the harness permits one explicit correction with the same request key and records the extra attempt. It never retries a turn whose outcome is uncertain. Earlier exploratory diagnostics demonstrated this model-dependent failure, so production code must validate tool outcomes instead of trusting generated claims.
 
-The full command probe requires both an observed automatic approval and a completed command item with exit code zero and the expected harmless marker. It also checks that a protected OS directory is not writable using an access check without modifying it. These full-mode paths have not been run on the supplied target: its SSH listener refused connections. No target credentials or account details are published in these evidence files.
+The command probe requires both an observed automatic approval and a completed command item with exit code zero and the expected harmless marker. It also checks that a protected OS directory is not writable using an access check without modifying it. These checks now pass in the constrained local mode. The dedicated-account deployment path remains unverified; the owner deferred SSH execution to a later stage. No target credentials or account details are published in these evidence files.
 
 ## Acceptance status
 
-The harness, pinned schema, skill/MCP contract and unit checks are implemented. Published live evidence records exactly which checks passed. **Ticket acceptance remains incomplete until a supplied non-admin target demonstrates real command approval within its OS permissions.** Actual file-change approval is not asserted by synthetic handler tests. General permission overlays, MCP forms, reauthentication, Linux execution and production plugin packaging are explicitly unverified or deferred as described above; failures must not be presented as passes.
+The requested local-first implementation is complete and ready for review. The harness, pinned schema, skill/MCP contract, local execution checks and automated checks are implemented and evidenced. **Dedicated non-admin deployment acceptance remains incomplete until that target demonstrates real command approval within its OS permissions.** Actual file-change approval is not asserted by synthetic handler tests. General permission overlays, MCP forms, reauthentication, Linux execution and production plugin packaging are explicitly unverified or deferred as described above; failures must not be presented as passes. Keep SHIP-001 open for its remaining deployment criterion rather than treating local proof as that result.

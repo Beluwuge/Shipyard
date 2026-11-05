@@ -5,14 +5,18 @@ import { resolve, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { AppServerClient } from './client.mjs';
 import { proofApprovalHandler, commandProbeSucceeded } from './approvals.mjs';
+import { probeCommand, isProbeApproval } from './probe-command.mjs';
 
 const diagnostic = process.argv.includes('--diagnostic');
+const local = process.argv.includes('--local');
+if (diagnostic && local) throw new Error('Choose either --diagnostic or --local');
 const modelIndex = process.argv.indexOf('--model');
 const selectedModel = modelIndex >= 0 ? process.argv[modelIndex + 1] : undefined;
 if (modelIndex >= 0 && (!selectedModel || selectedModel.startsWith('--'))) throw new Error('--model needs an explicit model ID');
 const groups = execFileSync('id', ['-Gn'], { encoding: 'utf8' }).trim().split(/\s+/);
 const nonAdmin = process.getuid?.() !== 0 && !groups.some(group => ['root', 'admin', 'sudo', 'wheel'].includes(group));
-if (!nonAdmin && !diagnostic) throw new Error('Full proof requires a non-admin account. --diagnostic runs text/MCP checks only and cannot satisfy that requirement.');
+if (process.getuid?.() === 0) throw new Error('Do not run this proof as root');
+if (!nonAdmin && !diagnostic && !local) throw new Error('Full proof requires a non-admin account. --diagnostic runs text/MCP checks only; --local adds a fixed sandboxed command proof without claiming non-admin deployment.');
 const version = execFileSync('codex', ['--version'], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'ignore'] }).trim();
 if (version !== 'codex-cli 0.148.0') throw new Error('Codex version mismatch; use the pinned version or explicitly review and recapture the protocol.');
 const output = resolve('.shipyard-proof');
@@ -28,7 +32,7 @@ const args = ['app-server', '--listen', 'stdio://', '-c', 'features.apps=false',
   '-c', `mcp_servers.shipyard.command=${JSON.stringify(process.execPath)}`,
   '-c', `mcp_servers.shipyard.args=${JSON.stringify([mockPath, receiptPath])}`];
 const report = { codex: version, node: process.version, platform: process.platform,
-  nonAdminAccount: nonAdmin, diagnostic, selectedModel: selectedModel ?? null, checks: {}, automaticApprovals: {}, limitations: [] };
+  nonAdminAccount: nonAdmin, diagnostic, local, selectedModel: selectedModel ?? null, checks: {}, automaticApprovals: {}, limitations: [] };
 let client;
 let threadId;
 const makeClient = () => new AppServerClient({ args, cwd: workdir, timeoutMs: 120_000 });
@@ -48,7 +52,7 @@ try {
   try { await client.request('model/list'); } catch { rejected = true; }
   check('rejectsBeforeInitialize', rejected);
   await client.initialize();
-  const config = { cwd: workdir, sandbox: diagnostic ? 'read-only' : 'workspace-write',
+  const config = { cwd: workdir, sandbox: diagnostic || local ? 'read-only' : 'workspace-write',
     approvalPolicy: diagnostic ? 'on-request' : 'untrusted', approvalsReviewer: 'user',
     developerInstructions: 'This is a disposable Shipyard protocol proof. Do not read outside the working directory. Use the Shipyard mock only when requested. Do not invoke shell or file tools unless the user explicitly requests the approval probe.' };
   const started = await client.request('thread/start', config);
@@ -58,7 +62,8 @@ try {
   writeFileSync(join(output, 'session.json'), JSON.stringify({ threadId, workdir }), { mode: 0o600 });
   report.defaults = { model: started.model, effort: started.reasoningEffort ?? null,
     sandbox: config.sandbox, approvalPolicy: started.approvalPolicy, reviewer: started.approvalsReviewer };
-  client.onRequest = proofApprovalHandler({ threadId, enabled: !diagnostic, allowMockDraft: true, record: method => {
+  client.onRequest = proofApprovalHandler({ threadId, enabled: !diagnostic, allowMockDraft: true,
+    commandFilter: local ? isProbeApproval : undefined, record: method => {
     report.automaticApprovals[method] = (report.automaticApprovals[method] ?? 0) + 1;
   } });
   const first = await turn([textInput('Remember the proof token SHIPYARD-CONTINUITY-148. Reply only ACK. Do not use tools.')]);
@@ -71,7 +76,8 @@ try {
   threadId = JSON.parse(readFileSync(join(output, 'session.json'), 'utf8')).threadId;
   const resumed = await client.request('thread/resume', { ...config, threadId });
   check('sameThreadAfterRestart', resumed.thread.id === threadId);
-  client.onRequest = proofApprovalHandler({ threadId, enabled: !diagnostic, allowMockDraft: true, record: method => {
+  client.onRequest = proofApprovalHandler({ threadId, enabled: !diagnostic, allowMockDraft: true,
+    commandFilter: local ? isProbeApproval : undefined, record: method => {
     report.automaticApprovals[method] = (report.automaticApprovals[method] ?? 0) + 1;
   } });
   const second = await turn([textInput('Reply with the exact proof token from the preceding turn. Do not use tools.')]);
@@ -147,13 +153,14 @@ try {
     try { accessSync(process.platform === 'darwin' ? '/var/root' : '/root', constants.W_OK); }
     catch (error) { protectedWriteDenied = ['EACCES', 'EPERM'].includes(error.code); }
     check('protectedLocationWriteDenied', protectedWriteDenied);
-    const approval = await turn([textInput('Run node -e "process.stdout.write(\'SHIPYARD_APPROVAL_PROOF\')" once as the approval probe. Do not access files or use any other commands.')], { model: selectedModel ?? started.model });
+    const approval = await turn([textInput(`Run exactly this command once as the approval probe: ${probeCommand}. Preserve its quoting. Do not access files, request elevated permissions, or use any other commands.`)], { model: selectedModel ?? started.model });
     check('automaticToolApprovalObserved', approval.status === 'completed' &&
       (report.automaticApprovals['item/commandExecution/requestApproval'] ?? 0) > 0 &&
       commandProbeSucceeded(client.events, approval.cursor));
   } else {
     report.limitations.push('Non-admin OS permission and live command/file approval proof not run in diagnostic mode.');
   }
+  if (local) report.limitations.push('Local-first proof under the existing account; dedicated non-admin and remote-host deployment remain unverified. Only the fixed command is eligible for automatic approval; file changes and broader permission requests are rejected.');
   report.limitations.push('create_run is a disposable MCP mock, not a deployed service. General MCP elicitation, broader permission requests, OAuth refresh and attestation are unsupported by this proof client.');
 } catch (error) {
   // Error text is deliberately constrained: upstream messages can contain user paths/data.
@@ -161,7 +168,7 @@ try {
 } finally {
   if (client) report.notificationMethods = [...new Set(client.events.map(event => event.method))].sort();
   if (client) await client.close();
-  report.status = report.error || Object.values(report.checks).includes('fail') ? 'failed' : diagnostic ? 'diagnostic-only' : 'passed';
+  report.status = report.error || Object.values(report.checks).includes('fail') ? 'failed' : diagnostic ? 'diagnostic-only' : local ? 'local-proof-only' : 'passed';
   writeFileSync(join(output, 'report.json'), `${JSON.stringify(report, null, 2)}\n`, { mode: 0o600 });
   console.log(JSON.stringify(report, null, 2));
   if (report.status === 'failed') process.exitCode = 1;
