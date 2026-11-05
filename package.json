@@ -1,0 +1,12 @@
+{
+  "name": "shipyard",
+  "private": true,
+  "type": "module",
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "test": "node --test packages/codex-proof/test/*.test.mjs",
+    "proof:schema": "node packages/codex-proof/capture-schema.mjs",
+    "proof:metadata": "node packages/codex-proof/capture-metadata.mjs",
+    "proof:codex": "node packages/codex-proof/prove.mjs"
+  }
+}

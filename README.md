@@ -13,3 +13,7 @@ See [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) for the V1 scope, operating mod
 See [docs/IMPLEMENTATION_SPEC.md](docs/IMPLEMENTATION_SPEC.md) for proposed component contracts, state transitions, duplicate prevention, acceptance scenarios, and delivery slices.
 
 See [docs/TICKETS.md](docs/TICKETS.md) for dependency-ordered implementation tickets, proposed acceptance criteria, evidence requirements, and GitHub issue links.
+
+## Codex integration proof
+
+SHIP-001 adds a dependency-free app-server client, pinned Codex 0.148.0 request schemas, a disposable Shipyard MCP mock, and a packaged workflow skill. Run `npm test` for protocol/contract checks. See [the proof runbook and decision record](docs/SHIP-001-PROOF.md) before running live diagnostics or the non-admin execution proof.

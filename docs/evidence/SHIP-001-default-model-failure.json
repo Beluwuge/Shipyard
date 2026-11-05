@@ -1,0 +1,30 @@
+{
+  "codex": "codex-cli 0.148.0",
+  "node": "v26.8.1",
+  "platform": "darwin",
+  "nonAdminAccount": false,
+  "diagnostic": true,
+  "checks": {
+    "rejectsBeforeInitialize": "pass",
+    "realTurn": "fail",
+    "streamedEvents": "fail",
+    "sameThreadAfterRestart": "pass",
+    "conversationContinuity": "fail",
+    "skillDiscovered": "pass",
+    "workflowDraftTool": "fail",
+    "workflowReturnsToolUrl": "fail",
+    "explicitModelEffortOverride": "fail",
+    "invalidModelFailsWithoutFallback": "pass"
+  },
+  "automaticApprovals": {},
+  "limitations": [],
+  "defaults": {
+    "model": "gpt-6-luna",
+    "effort": "high",
+    "sandbox": "read-only",
+    "approvalPolicy": "on-request",
+    "reviewer": "user"
+  },
+  "error": "RPC turn/interrupt failed (-32600)",
+  "status": "failed"
+}

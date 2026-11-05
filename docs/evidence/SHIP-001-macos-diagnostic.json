@@ -1,0 +1,67 @@
+{
+  "codex": "codex-cli 0.148.0",
+  "node": "v26.8.1",
+  "platform": "darwin",
+  "nonAdminAccount": false,
+  "diagnostic": true,
+  "selectedModel": "gpt-5.6-sol",
+  "checks": {
+    "rejectsBeforeInitialize": "pass",
+    "realTurn": "pass",
+    "streamedEvents": "pass",
+    "sameThreadAfterRestart": "pass",
+    "conversationContinuity": "pass",
+    "skillDiscovered": "pass",
+    "mockToolReady": "pass",
+    "workflowDraftTool": "pass",
+    "workflowReturnsToolUrl": "pass",
+    "explicitModelEffortOverride": "pass",
+    "invalidModelFailsWithoutFallback": "pass",
+    "interrupt": "pass"
+  },
+  "automaticApprovals": {
+    "mockDraftApproval": 1
+  },
+  "limitations": [
+    "Non-admin OS permission and live command/file approval proof not run in diagnostic mode.",
+    "create_run is a disposable MCP mock, not a deployed service. General MCP elicitation, broader permission requests, OAuth refresh and attestation are unsupported by this proof client."
+  ],
+  "catalog": [
+    "gpt-5.6-sol",
+    "gpt-5.6-terra",
+    "gpt-5.6-luna"
+  ],
+  "defaults": {
+    "model": "gpt-6-luna",
+    "effort": "high",
+    "sandbox": "read-only",
+    "approvalPolicy": "on-request",
+    "reviewer": "user"
+  },
+  "workflowAttempts": 1,
+  "overrideObserved": {
+    "model": "gpt-5.6-sol",
+    "effort": "low"
+  },
+  "interruptRpcAcknowledged": true,
+  "interruptCompletionSource": "turn/completed",
+  "notificationMethods": [
+    "account/rateLimits/updated",
+    "error",
+    "item/agentMessage/delta",
+    "item/completed",
+    "item/reasoning/summaryPartAdded",
+    "item/reasoning/summaryTextDelta",
+    "item/started",
+    "mcpServer/startupStatus/updated",
+    "remoteControl/status/changed",
+    "serverRequest/resolved",
+    "thread/goal/cleared",
+    "thread/status/changed",
+    "thread/tokenUsage/updated",
+    "turn/completed",
+    "turn/started",
+    "warning"
+  ],
+  "status": "diagnostic-only"
+}
