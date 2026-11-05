@@ -1,0 +1,105 @@
+{
+  "codex": "codex-cli 0.148.0",
+  "description": "Observed frame metadata, not a replayable raw transcript. No payload values retained.",
+  "frames": [
+    {
+      "direction": "client",
+      "method": "initialize",
+      "hasId": true,
+      "paramsKeys": [
+        "clientInfo"
+      ]
+    },
+    {
+      "direction": "server",
+      "hasId": true,
+      "resultKeys": [
+        "codexHome",
+        "platformFamily",
+        "platformOs",
+        "userAgent"
+      ]
+    },
+    {
+      "direction": "server",
+      "method": "remoteControl/status/changed",
+      "hasId": false,
+      "paramsKeys": [
+        "environmentId",
+        "installationId",
+        "serverName",
+        "status"
+      ]
+    },
+    {
+      "direction": "client",
+      "method": "initialized",
+      "hasId": false,
+      "paramsKeys": []
+    },
+    {
+      "direction": "client",
+      "method": "model/list",
+      "hasId": true,
+      "paramsKeys": []
+    },
+    {
+      "direction": "server",
+      "hasId": true,
+      "resultKeys": [
+        "data",
+        "nextCursor"
+      ]
+    },
+    {
+      "direction": "client",
+      "method": "thread/start",
+      "hasId": true,
+      "paramsKeys": [
+        "approvalPolicy",
+        "cwd",
+        "ephemeral",
+        "sandbox"
+      ]
+    },
+    {
+      "direction": "server",
+      "hasId": true,
+      "resultKeys": [
+        "activePermissionProfile",
+        "approvalPolicy",
+        "approvalsReviewer",
+        "cwd",
+        "instructionSources",
+        "model",
+        "modelProvider",
+        "multiAgentMode",
+        "reasoningEffort",
+        "runtimeWorkspaceRoots",
+        "sandbox",
+        "serviceTier",
+        "thread"
+      ]
+    },
+    {
+      "direction": "server",
+      "method": "thread/started",
+      "hasId": false,
+      "paramsKeys": [
+        "thread"
+      ]
+    },
+    {
+      "direction": "server",
+      "method": "mcpServer/startupStatus/updated",
+      "hasId": false,
+      "paramsKeys": [
+        "error",
+        "failureReason",
+        "name",
+        "status",
+        "threadId"
+      ]
+    }
+  ]
+}

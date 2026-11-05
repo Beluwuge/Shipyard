@@ -1,0 +1,20 @@
+{
+  "codex": "codex-cli 0.148.0",
+  "sha256": "d924a98326c6400812f6c31130c6430ffbe0ddfa293b7923f261bf31291341e9",
+  "methods": [
+    "initialize",
+    "thread/start",
+    "thread/resume",
+    "thread/read",
+    "skills/list",
+    "turn/start",
+    "turn/interrupt",
+    "model/list",
+    "mcpServerStatus/list",
+    "item/commandExecution/requestApproval",
+    "item/fileChange/requestApproval",
+    "item/tool/requestUserInput",
+    "mcpServer/elicitation/request",
+    "item/permissions/requestApproval"
+  ]
+}
