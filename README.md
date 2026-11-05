@@ -11,3 +11,5 @@ This repository is starting with the agreed product specification. Implementatio
 See [docs/PRODUCT_SPEC.md](docs/PRODUCT_SPEC.md) for the V1 scope, operating model, security boundaries, run lifecycle, Git behavior, and memory design.
 
 See [docs/IMPLEMENTATION_SPEC.md](docs/IMPLEMENTATION_SPEC.md) for proposed component contracts, state transitions, duplicate prevention, acceptance scenarios, and delivery slices.
+
+See [docs/TICKETS.md](docs/TICKETS.md) for dependency-ordered implementation tickets, proposed acceptance criteria, evidence requirements, and GitHub issue links.

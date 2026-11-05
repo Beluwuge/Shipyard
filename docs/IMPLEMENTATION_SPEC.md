@@ -208,3 +208,5 @@ Verification spans unit checks for contracts/transitions, fault-injection transp
 | 6: operations | Cleanup, 30-day retention, backups/restore, worker updates and deployment guide | A14–A16 and complete Linux/macOS matrix |
 
 Slice 0 is a bounded prerequisite, not an open-ended research phase. An unsupported integration must produce a concrete alternative and impact on agreed behavior before code assumes it works. V1 is complete only when all acceptance scenarios have evidence; the documentation PR itself establishes no runtime guarantees.
+
+The [implementation backlog](TICKETS.md) breaks these slices into dependency-ordered tickets with proposed criteria and evidence requirements.
