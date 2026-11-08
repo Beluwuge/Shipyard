@@ -19,3 +19,7 @@ See [docs/TICKETS.md](docs/TICKETS.md) for dependency-ordered implementation tic
 SHIP-001 adds a dependency-free app-server client, pinned Codex 0.148.0 request schemas, a disposable Shipyard MCP mock, and a packaged workflow skill. Run `npm test` for protocol/contract checks. See [the proof runbook and decision record](docs/SHIP-001-PROOF.md) before running live diagnostics or the non-admin execution proof.
 
 The local-first execution proof uses `npm run proof:codex -- --local --model gpt-5.6-sol` with a read-only sandbox and a literal command allowlist. Its 14 passing checks are recorded separately from the deferred dedicated non-admin deployment proof.
+
+## Tailnet identity and supervision proof
+
+SHIP-002 adds disposable systemd-user/LaunchAgent fixtures and an owner-only Serve identity probe. See [the platform proof and installation runbook](docs/SHIP-002-PROOF.md) for commands, removal steps and the observed Linux/macOS matrix. Both platforms passed service restart and crash recovery diagnostics; dedicated non-admin, second-user/tagged traffic, logout and reboot acceptance remain unverified. A macOS LaunchAgent supports logged-in sessions only and does not establish unattended operation after logout.
