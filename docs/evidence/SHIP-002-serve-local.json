@@ -1,0 +1,34 @@
+{
+  "proof": "SHIP-002",
+  "expected": "owner",
+  "observations": [
+    {
+      "label": "normal",
+      "status": 200,
+      "decision": "owner",
+      "instance": "e87b0b55-e4e0-4ded-af30-2df93ee8188c"
+    },
+    {
+      "label": "spoof-other",
+      "status": 200,
+      "decision": "owner",
+      "instance": "e87b0b55-e4e0-4ded-af30-2df93ee8188c"
+    },
+    {
+      "label": "spoof-owner",
+      "status": 200,
+      "decision": "owner",
+      "instance": "e87b0b55-e4e0-4ded-af30-2df93ee8188c"
+    }
+  ],
+  "direct": {
+    "reachable": false,
+    "reason": "ECONNREFUSED"
+  },
+  "clientHeadersDoNotChangeDecision": true,
+  "passed": true,
+  "limitations": [
+    "Connection failure alone does not prove listener binding; inspect target sockets.",
+    "This records only the real identity of the invoking device."
+  ]
+}
