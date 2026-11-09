@@ -50,12 +50,12 @@ try {
     if (!Number.isInteger(port) || port < 1024 || port > 65535) throw new Error('Invalid proof port');
     const owner = process.env.SHIPYARD_PROOF_OWNER;
     if (!owner || /[\s,]/u.test(owner)) throw new Error('Set SHIPYARD_PROOF_OWNER to the exact Tailnet login');
-    await mkdir(directory, { recursive: true, mode: 0o700 });
     const script = path.join(directory, 'server.mjs');
     const config = path.join(directory, 'config.json');
+    const definition = supervisorDefinition({ platform: process.platform, name, node: process.execPath, script, config, directory });
+    await mkdir(directory, { recursive: true, mode: 0o700 });
     await copyFile(fileURLToPath(new URL('./server.mjs', import.meta.url)), script);
     await writeFile(config, JSON.stringify({ owner, port, name }), { mode: 0o600, flag: 'wx' });
-    const definition = supervisorDefinition({ platform: process.platform, name, node: process.execPath, script, config, directory });
     const unitFile = process.platform === 'linux' ? path.join(directory, `${name}.service`) : path.join(homedir(), 'Library', 'LaunchAgents', `${name}.plist`);
     await mkdir(path.dirname(unitFile), { recursive: true, mode: 0o700 });
     await writeFile(unitFile, definition, { mode: 0o600, flag: 'wx' });

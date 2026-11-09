@@ -72,7 +72,7 @@ npm run proof:host -- cleanup .shipyard-proof/host-state.json
 
 Cleanup disables/stops the exact Linux unit or boots out the exact LaunchAgent, removes its plist/unit and payload, and deletes its state file. It does not change other Serve routes, lingering, accounts, authentication stores or other services. If setup fails, retain the state file to retry cleanup. If the GUI login domain is absent, the agent is already unloaded; remove its exact plist and payload. Do not manually delete unrelated directories. Existing service versions are untouched, so rollback consists of removing the disposable fixture; production upgrades belong to SHIP-016.
 
-## Observed platform matrix
+## Original platform matrix
 
 Evidence: [platform results](evidence/SHIP-002-platforms.json), [actual local Serve requests](evidence/SHIP-002-serve-local.json). Tested on 2026-11-09 Singapore time. Public evidence excludes account login names, hostnames, target network addresses, credentials and filesystem paths.
 
@@ -92,4 +92,28 @@ Evidence: [platform results](evidence/SHIP-002-platforms.json), [actual local Se
 | Real Serve owner/header stripping | Setup denied by Tailscale permissions | Observed on host's own Serve URL; cross-device request timed out |
 | Real other user / tagged / absent at Serve | Unavailable | Unavailable |
 
-The Mac proof uses only port 9443. A proposed test on port 443 was rejected by automatic approval review and remains pending owner approval; no 443 route was created. Linux existing Serve routes were inspected and preserved. No account privilege, operating-system package, lingering setting, or login policy was changed. No live reboot/logout or user-manager termination was attempted. **SHIP-002 remains open** until the missing identity and non-admin/persistence criteria have real evidence and the macOS strategy gap is resolved.
+The original Mac proof used only port 9443. A proposed test on port 443 was rejected by automatic approval review; no 443 route was created. The replacement-target test below succeeds on port 9443, so the port-443 proposal is no longer needed. Linux existing Serve routes were inspected and preserved. No account privilege, operating-system package, lingering setting, or login policy was changed. No live reboot/logout or user-manager termination was attempted. **SHIP-002 remains open** until the missing identity and non-admin/persistence criteria have real evidence and the macOS strategy gap is resolved.
+
+## Owner-selected replacement target
+
+The owner supplied a replacement SSH target and local key path on 2026-11-09. SSH key authentication and strict host-key checking succeeded. The private key remained on the client; it was neither copied to the target nor stored in this repository. The supplied path worked as an SSH identity file, regardless of its description as a public key.
+
+The replacement Mac runs macOS 26.5.2, Node 22.22.2 and Tailscale 1.102.4. Node now meets the runtime requirement. Tailscale reported a client/daemon build-commit difference within that release; the observed probes below passed despite that warning. The account is still an admin-group member, so execution remains diagnostic and does not resolve the non-admin criterion.
+
+Evidence: [replacement platform results](evidence/SHIP-002-replacement-macos.json) and [real cross-device Serve responses](evidence/SHIP-002-replacement-serve.json).
+
+| Check | Replacement Mac result |
+| --- | --- |
+| SSH disconnect/reconnect | Same service instance observed in a separate connection |
+| Explicit service restart | New process instance observed |
+| Forced process crash | LaunchAgent restarted it with a new instance |
+| Listener | Only `127.0.0.1:47831`; missing identity returns 403 |
+| Real Serve owner from another Tailnet device | HTTP 200, owner decision |
+| Forged owner/other headers through Serve | Both yield the same verified owner decision and instance |
+| Direct Tailnet backend from another device | Connection refused |
+| Real second user / tagged device | Unavailable; forged headers are not substitute identities |
+| Full logout / manager restart / reboot | Not performed; LaunchAgent logout limitation unchanged |
+
+The remote Homebrew runtime resolves to a versioned `node@22` path. Initial setup exposed an overly restrictive path validator before any agent was installed. The harness now permits the literal `@` character inside its quoted arguments and validates the supervisor definition before creating payload files. A regression case covers that path while newline, quote, systemd-specifier, variable and parent-traversal rejection remains intact. The partial failed payload was identified and removed before retrying.
+
+The replacement target's existing Serve listener was inspected first. Only an unused HTTPS port 9443 was added for the proof. After testing, that route, the LaunchAgent, its payload and all copied sources were removed. The pre-existing port-10000 Serve route remained unchanged. No privilege, login or account settings were modified. Remaining blockers are dedicated non-admin execution, real second-user/tagged-device/absent-at-Serve evidence, logout/reboot/manager-restart observations, and an unattended macOS strategy.

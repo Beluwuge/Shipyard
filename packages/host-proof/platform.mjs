@@ -14,7 +14,7 @@ export function inspectAccount() {
 function safePath(value) {
   // Restrict proof paths so neither systemd specifiers, shell syntax nor XML
   // interpolation can change the generated supervisor command.
-  if (typeof value !== 'string' || !/^\/[A-Za-z0-9_./ -]+$/u.test(value) || value.split('/').includes('..')) throw new Error('Unsafe absolute proof path');
+  if (typeof value !== 'string' || !/^\/[A-Za-z0-9_@./ -]+$/u.test(value) || value.split('/').includes('..')) throw new Error('Unsafe absolute proof path');
   return value;
 }
 const xml = value => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;');

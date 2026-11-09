@@ -51,6 +51,7 @@ test('generated supervisors quote spaces and reject executable/configuration inj
   const args = { name: 'shipyard-proof-012345abcdef', node: '/usr/bin/node', script: '/home/a b/server.mjs', config: '/home/a b/config.json', directory: '/home/a b' };
   assert.match(supervisorDefinition({ ...args, platform: 'linux' }), /ExecStart="\/usr\/bin\/node" "\/home\/a b\/server.mjs"/u);
   assert.match(supervisorDefinition({ ...args, platform: 'darwin' }), /<key>RunAtLoad<\/key><true\/>/u);
+  assert.match(supervisorDefinition({ ...args, platform: 'darwin', node: '/opt/homebrew/Cellar/node@22/22.22.2/bin/node' }), /node@22/u);
   for (const value of ['/tmp/evil\nExecStart=bad', '/tmp/%n', '/tmp/$HOME', '/tmp/"evil', '/tmp/../elsewhere', '/tmp/..']) {
     assert.throws(() => supervisorDefinition({ ...args, platform: 'linux', script: value }));
   }

@@ -1,0 +1,42 @@
+{
+  "ticket": "SHIP-002",
+  "observedOn": "2026-11-09",
+  "timezone": "Asia/Singapore",
+  "target": "owner-selected replacement macOS target",
+  "acceptanceComplete": false,
+  "version": "26.5.2",
+  "node": "22.22.2",
+  "runtimeSupported": true,
+  "tailscale": "1.102.4",
+  "tailscaleBuildWarning": "Client and daemon report different build commits for the same release version",
+  "ssh": {
+    "keyAuthentication": "passed",
+    "strictHostKeyVerification": "passed"
+  },
+  "nonAdminVerified": false,
+  "elevatedGroups": ["admin"],
+  "guiDomainAvailable": true,
+  "listener": "127.0.0.1:47831",
+  "missingIdentityStatus": 403,
+  "setupInstance": "94c2a704-ae59-448e-87d7-1ab22f554100",
+  "afterSSHReconnectInstance": "94c2a704-ae59-448e-87d7-1ab22f554100",
+  "afterServiceRestartInstance": "dde11abe-ed24-4089-9043-040edde7e2a8",
+  "afterCrashInstance": "a0c53c8b-1c47-46d8-8fa7-cf1960370732",
+  "serveCrossDeviceOwnerAndHeaderSpoofing": "passed on temporary HTTPS port 9443",
+  "directTailnetFromOtherHost": "ECONNREFUSED",
+  "realSecondUser": "unavailable",
+  "realTaggedDevice": "unavailable",
+  "fullLogout": "not-tested; LaunchAgent cannot remain after logout",
+  "userManagerRestart": "not-tested",
+  "machineReboot": "not-tested",
+  "crossLANProbe": "not-tested",
+  "harnessFix": "Permit literal @ in quoted supervisor paths for versioned Homebrew Node installations; validate definition before creating payload files",
+  "cleanup": {
+    "partialFailedSetupPayloadRemoved": true,
+    "proofServiceAndCopiedFilesRemoved": true,
+    "proofListenerRemoved": true,
+    "temporaryServeRouteRemoved": true,
+    "preExistingServeRoutePreserved": true,
+    "noAccountOrLoginPolicyChanges": true
+  }
+}
